@@ -1,0 +1,183 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+  <title>Spam Detection</title>
+
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-image: url('https://www.jnttek.com/wp-content/uploads/2019/04/Bulk-Email-Best-Practices-Featured.jpg');
+      background-repeat: no-repeat;
+      background-size: cover;
+      font-family: Arial, sans-serif;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      background-color: #fff;
+      width: 70%;
+      max-width: 800px;
+    }
+
+    textarea {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      border: none;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      font-size: 18px;
+    }
+
+    button[type="submit"] {
+      padding: 15px 30px;
+      border-radius: 5px;
+      border: none;
+      background-color: #007bff;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #0069d9;
+    }
+
+    span {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 18px;
+      color: #333;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div>
+
+    <form action="/predict" method="post">
+
+      <textarea name="message" id="mid" rows="5" placeholder="Enter message..." autofocus></textarea>
+      <button type="submit">Submit</button>
+
+    </form>
+    <span>{{pred}}</span>
+    <span>{{pred1}}</span>
+    <span>{{pred2}}</span>
+    
+  </div>
+
+</body>
+</html> -->
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+  <title>Spam Detection</title>
+
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-image: url('https://www.jnttek.com/wp-content/uploads/2019/04/Bulk-Email-Best-Practices-Featured.jpg'), url('https://cdn.pixabay.com/photo/2016/03/23/15/00/letter-1279367_960_720.jpg');
+      background-repeat: no-repeat, no-repeat;
+      background-size: cover, cover;
+      font-family: Arial, sans-serif;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      background-color: #fff;
+      width: 70%;
+      max-width: 800px;
+      background-color: rgb(224, 219, 209);
+    }
+
+    textarea {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      border: none;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      font-size: 18px;
+      background-color: rgb(224, 219, 209);
+    }
+
+    button[type="submit"] {
+      padding: 15px 30px;
+      border-radius: 5px;
+      border: none;
+      background-color: #007bff;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #0069d9;
+    }
+
+    span {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 18px;
+      color: #333;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div>
+
+    <form action="/predict" method="post">
+
+      <textarea name="message" id="mid" rows="5" autofocus placeholder="Enter message..."></textarea>
+      <button type="submit">Submit</button>
+
+    </form>
+    <br>
+    <span><h3>{{pred}}</h3></span>
+    <span><h3>{{pred1}}</h3></span>
+    <span><h2>{{pred2}}</h2></span>
+    
+  </div>
+
+</body>
+</html>
