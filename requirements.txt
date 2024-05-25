@@ -1,0 +1,9 @@
+python == 3.10
+Flask == 2.2.3
+Werkzeug == 2.2.3
+numpy==1.23.5
+pandas==1.5.2
+matplotlib==3.6.2
+regex == 2023.3.23
+pickle==4.0
+re == 12.4
