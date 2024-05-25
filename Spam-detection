@@ -1,0 +1,149 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import re
+import pickle
+
+
+
+messages = pd.read_csv('https://drive.google.com/uc?id=17bpIlFsn1tZE-7OHzcy9HfzqnQ_YtEMD', sep = "\t", header = None)
+
+messages.columns = ["Label", "Message"] #Labeling the columns as Label and Message
+
+
+messages["Label"].value_counts().plot.bar(rot = 30)
+plt.xlabel("Message Label")
+plt.ylabel("Frequency")
+
+messages["Label"].value_counts(normalize = True)
+
+# random data
+random_data = messages.sample(frac = 1, random_state = 1)
+
+# lengths of the training and testing data, that will be used as future indexes
+len_train = round(len(random_data) * .8)
+len_test = len(random_data) - len_train
+
+# creating the sets using slicing
+training = random_data[:len_train].reset_index(drop = True)
+testing = random_data[-len_test:].reset_index(drop = True)
+
+
+training["Label"].value_counts(normalize = True)
+
+testing["Label"].value_counts(normalize = True)
+
+
+# "\W" is a regex command that matches character that are not a-z, A-Z, 0-9 and _
+training["Message"] = training["Message"].str.replace("\W", " ", regex  = True).str.lower()
+
+# creating the vocabulary
+vocabulary = []
+training["Message"] = training["Message"].str.split()
+for message in training["Message"]:
+    for word in message:
+        if word not in vocabulary:
+            vocabulary.append(word)
+
+
+d = len(vocabulary)
+
+
+# creating the dictionary that will be converted to a dataframe
+word_freq_per_message = {word:[0]*len(training["Message"]) for word in vocabulary}
+
+# adding the frequencies to word_freq_per_message
+for i, message in enumerate(training["Message"]):
+    for word in message: # recall that 'message' is a list of words, saved as strings
+        word_freq_per_message[word][i] += 1
+        
+words_freq_per_message = pd.DataFrame(word_freq_per_message)
+# words_freq_per_message
+
+training_final = pd.concat([training, words_freq_per_message], axis = 1)
+
+# training_final
+
+prob_spam = len(training_final[training_final["Label"] == "spam"]) / len(training_final["Label"])
+prob_nonspam = 1 - prob_spam
+
+
+# calculating P(word_i|C_k)
+spam_messages = training_final[training_final["Label"] == "spam"]
+nonspam_messages = training_final[training_final["Label"] == "ham"]
+
+alpha = 1
+n_spam = spam_messages["Message"].apply(len).sum()
+n_nonspam = nonspam_messages["Message"].apply(len).sum()
+
+prob_word_given_spam = {}
+prob_word_given_nonspam = {}
+
+for word in vocabulary:
+    prob_word_given_spam[word] = (spam_messages[word].sum() + alpha) / (n_spam + alpha * d)
+    prob_word_given_nonspam[word] = (nonspam_messages[word].sum() + alpha) / (n_nonspam + alpha * d)
+
+
+
+class MyModel:
+    
+    def classify(message):
+        if not isinstance(message, str):
+            raise Exception("Argument must be a string")
+        
+        message = re.sub("\W", " ", message)
+        message = message.lower().split()
+        
+        prob_spam_given_message = prob_spam
+        prob_nonspam_given_message = prob_nonspam
+        for word in message:
+            if word in prob_word_given_spam:
+                prob_spam_given_message = prob_word_given_spam[word]
+            if word in prob_word_given_nonspam:
+                prob_nonspam_given_message = prob_word_given_nonspam[word]
+        # we added these if clauses to avoid issues when a word of a message is not present in our list (see README for more)
+        
+        if prob_spam_given_message > prob_nonspam_given_message:
+            res = "spam"
+        elif prob_spam_given_message < prob_nonspam_given_message:
+            res = "ham"
+        else: # if there is equality. It is unlikely to occur, since we're comparing float numbers
+            res = "Classification failed"
+        
+        return prob_spam_given_message, prob_nonspam_given_message, res
+model=MyModel
+
+# checking boundary case
+
+print(model.classify('3'))
+
+print(model.classify("What you doing?how are you?"))
+
+print(model.classify("Ok lar... Joking wif u oni..."))
+
+print(model.classify("dun say so early hor... U c already then say..."))
+
+print(model.classify("MY NO. IN LUTON 0125698789 RING ME IF UR AROUND! H*"))
+
+print(model.classify("Siva is in hostel aha:-."))
+
+print(model.classify("Cos i was out shopping wif darren jus now n i called him 2 ask wat present he wan lor. Then he started guessing who i was wif n he finally guessed darren lor."))
+
+print(model.classify("FreeMsg: Txt: CALL to No: 86888 & claim your reward of 3 hours talk time to use from your phone now! ubscribe6GBP/ mnth inc 3hrs 16 stop?txtStop"))
+
+print(model.classify("Sunshine Quiz! Win a super Sony DVD recorder if you canname the capital of Australia? Text MQUIZ to 82277. B"))
+
+print(model.classify("URGENT! Your Mobile No 07808726822 was awarded a L2,000 Bonus Caller Prize on 02/09/03! This is our 2nd attempt to contact YOU! Call 0871-872-9758 BOX95QU"))
+
+testing["classification"] = testing["Message"].apply(lambda message: model.classify(message)[2])
+
+correct_class_len = 0
+total_messages = testing.shape[0] #1114
+
+for row in testing.iterrows():
+    if row[1]["Label"] == row[1]["classification"]: #we use row[1] because iterrows() returns (index,row)
+        correct_class_len += 1
+
+accuracy = correct_class_len / total_messages
+print("Accuracy is {}".format(accuracy))
+pickle.dump(model,open('model.pkl','wb'))
